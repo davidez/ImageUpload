@@ -1,0 +1,23 @@
+﻿@page "/"
+<h1>Upload any .jpg file &gt; 1 MB </h1>
+
+<InputFile multiple OnChange="OnChange" class="form-control"></InputFile>
+
+@code {
+	private async Task OnChange(InputFileChangeEventArgs e) {
+
+		foreach (var item in e.GetMultipleFiles()) {
+
+			if (!Directory.Exists(@"C:\test")) //works
+				Directory.CreateDirectory(@"C:\test"); //works
+
+
+			using FileStream fs = new($@"C:\test\{Guid.NewGuid()}.jpg", FileMode.Create); //works
+			await item.OpenReadStream().CopyToAsync(fs); // does not work, creates a 0 byte file
+			await fs.FlushAsync(); // does not flush
+
+		}
+	}
+
+
+}
